@@ -5,6 +5,8 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
+    checkuser: null,
+    checkemail: null,
     token: localStorage.getItem('access_token') || null,
     products: [],
     types: [],
@@ -57,9 +59,16 @@ const store = new Vuex.Store({
     chars(state, payload){
         state.chars = payload
     },
+    checkuser(state, payload){
+      state.checkuser = payload
+    },
+    checkemail(state, payload){
+      state.checkemail = payload
+    }
   },
   actions: {
     createUser(context){
+      return new Promise((resolve, reject) => {
         axios.post(
             'http://localhost:8000/api/admin/register', 
             context.state.user, 
@@ -68,37 +77,34 @@ const store = new Vuex.Store({
                 }
             }
         ).then( response => {
-            console.log("response post user new: ", response)
+            resolve(response)
         }).catch(function (error) {
-            if (error.response) {
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-              } else if (error.request) {
-                console.log(error.request);
-              } else {
-                console.log('Error', error.message);
-              }
-              console.log(error.config);
+            reject(error)
         })
+      })
     },
     deleteProduct(context){
+      return new Promise((resolve, reject) => {
         let token = context.state.token
-        const instance = axios.create({
-        baseURL: 'http://localhost:8000/api/',
-        timeout: 1000,
-        headers: {'Authorization': 'Bearer '+token},
-        params: { 'id' : context.state.productId }
-        });
-        instance.get('/productdel')
-        .then(response => {
-            context.commit('getProducts', response.data.data)
-            return context.state.products;
+        axios.post(
+            'http://localhost:8000/api/pdd', 
+            context.state.productId, 
+            { "headers" : {
+                'Authorization': 'Bearer ' + token,
+                "Content-Type" : "Application/json"
+                }
+            }
+        ).then( response => {
+            context.dispatch('getProducts')
+            resolve(response)
+        }).catch(function (error) {
+            reject(error)
         })
+      })
+
     },
     saveProduct(context){
         let token = context.state.token
-
         axios.post(
             'http://localhost:8000/api/product', 
             context.state.product, 
@@ -112,26 +118,56 @@ const store = new Vuex.Store({
         })
         
     },
+    checkuser(context) {
+      return new Promise((resolve, reject) => {
+        axios.post(
+          'http://localhost:8000/api/checkuser', 
+          context.state.user, 
+          { "headers" : {
+              "Content-Type" : "Application/json"
+              }
+          }
+        ).then(response => {
+            context.commit('checkuser', response.data.data)
+            resolve(response)
+        })
+      })
+    },
+    checkemail(context) {
+      return new Promise((resolve, reject) => {
+        axios.post(
+          'http://localhost:8000/api/checkemail', 
+          context.state.user, 
+          { "headers" : {
+              "Content-Type" : "Application/json"
+              }
+          }
+        ).then(response => {
+            context.commit('checkemail', response.data.data)
+            resolve(response)
+        })
+      })
+    },
     getChars(context) {
         const instance = axios.create({
         baseURL: 'http://localhost:8000/api/',
         timeout: 1000
-        });
+        })
         instance.get('/chars')
         .then(response => {
             context.commit('chars', response.data.data)
-            return context.state.chars;
+            return context.state.chars
         })
     },
     getTypes(context) {
         const instance = axios.create({
         baseURL: 'http://localhost:8000/api/',
         timeout: 1000
-        });
+        })
         instance.get('/types')
         .then(response => {
             context.commit('types', response.data.data)
-            return context.state.types;
+            return context.state.types
         })
     },
     getProducts(context) {
@@ -140,11 +176,11 @@ const store = new Vuex.Store({
         baseURL: 'http://localhost:8000/api/',
         timeout: 1000,
         headers: {'Authorization': 'Bearer '+token}
-        });
+        })
         instance.get('/products')
         .then(response => {
             context.commit('getProducts', response.data.data)
-            return context.state.products;
+            return context.state.products
         })
     },
     retrieveToken(context, credentials) {
@@ -167,25 +203,19 @@ const store = new Vuex.Store({
 
     },
     destroyToken(context) {
-
       if (context.getters.loggedIn) {
-
         return new Promise((resolve, reject) => {
           axios.post('/api/logout', '', {
               headers: { Authorization: "Bearer " + context.state.token }
             })
             .then(response => {
-              //console.log(response)
               localStorage.removeItem('access_token')
               context.commit('destroyToken')
-
               resolve(response)
             })
             .catch(error => {
-              //console.log(error)
               localStorage.removeItem('access_token')
               context.commit('destroyToken')
-
               reject(error)
             })
         })

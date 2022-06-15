@@ -1974,6 +1974,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "products",
   data: function data() {
@@ -2007,13 +2010,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteProduct: function deleteProduct(id) {
       var _this2 = this;
 
-      console.log('borrar id: ', id);
       this.$store.commit('setProductId', id);
-      this.$store.dispatch("deleteProduct", id).then(function (response) {
-        _this2.$router.push({
-          name: "productList"
-        });
-      })["catch"](function (error) {
+      this.$store.dispatch("deleteProduct").then(function (response) {})["catch"](function (error) {
         _this2.error = error.response.data;
       });
     }
@@ -2108,6 +2106,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getChars();
   },
   methods: {
+    cancel: function cancel() {
+      this.$store.state.product = this.product;
+      this.$router.push({
+        name: "productList"
+      });
+    },
     getTypes: function getTypes() {
       var _this = this;
 
@@ -2190,6 +2194,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 //
 //
 //
@@ -2214,10 +2222,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "register",
   data: function data() {
     return {
+      flag1: false,
+      flag2: false,
+      message: "",
       user: {
         name: "",
         email: "",
@@ -2228,13 +2240,67 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {},
   methods: {
-    saveUser: function saveUser(user) {
-      this.$store.commit('setUser', user);
-      this.$store.dispatch("createUser", user).then(function (response) {
-        console.log("response save user:", response); // this.$router.push({ name: "/" });
-      })["catch"](function (error) {
-        console.log("error save user:", error);
+    checkemail: function checkemail(email) {
+      var _this = this;
+
+      this.$store.dispatch("checkemail").then(function (response) {
+        _this.flag2 = response.data.data;
       });
+    },
+    checkuser: function checkuser() {
+      var _this2 = this;
+
+      this.$store.dispatch("checkuser").then(function (response) {
+        _this2.flag1 = response.data.data;
+      });
+    },
+    saveUser: function saveUser(user) {
+      var _this3 = this;
+
+      this.$store.commit('setUser', user);
+
+      if (this.user.name === '' || this.user.name === null || this.user.name.value === 0) {
+        this.message = "Ingrese un nombre de usuario";
+      } else {
+        this.checkuser();
+
+        if (!this.flag1) {
+          this.message = "Ya existe el nombre de usuario";
+        } else {
+          this.message = "";
+
+          if (this.user.email === '' || this.user.email === null || this.user.email.value === 0 && cname) {
+            this.message = "Ingrese un email de usuario";
+          } else {
+            this.message = "";
+            this.checkemail();
+
+            if (!this.flag2) {
+              this.message = "Ya existe el email de usuario";
+            } else {
+              if (this.user.password === this.user.c_password) {
+                this.$store.dispatch("createUser").then(function (response) {
+                  console.log("response save user2:", _typeof(response));
+
+                  if (typeof response === "undefined") {
+                    _this3.$router.push({
+                      name: "register"
+                    });
+                  } else {
+                    _this3.$router.push({
+                      name: "login"
+                    });
+                  }
+                })["catch"](function (error) {
+                  console.log("error save user:", error);
+                });
+              } else {
+                this.message = "la clave de acceso no coincide";
+              }
+            }
+          }
+        }
+      }
     }
   },
   computed: {}
@@ -2314,6 +2380,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -19628,6 +19695,320 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/path-browserify/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/path-browserify/index.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
+// backported and transplited with Babel, with backwards-compat fixes
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  if (path.length === 0) return '.';
+  var code = path.charCodeAt(0);
+  var hasRoot = code === 47 /*/*/;
+  var end = -1;
+  var matchedSlash = true;
+  for (var i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        if (!matchedSlash) {
+          end = i;
+          break;
+        }
+      } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
+  }
+
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) {
+    // return '//';
+    // Backwards-compat fix:
+    return '/';
+  }
+  return path.slice(0, end);
+};
+
+function basename(path) {
+  if (typeof path !== 'string') path = path + '';
+
+  var start = 0;
+  var end = -1;
+  var matchedSlash = true;
+  var i;
+
+  for (i = path.length - 1; i >= 0; --i) {
+    if (path.charCodeAt(i) === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          start = i + 1;
+          break;
+        }
+      } else if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // path component
+      matchedSlash = false;
+      end = i + 1;
+    }
+  }
+
+  if (end === -1) return '';
+  return path.slice(start, end);
+}
+
+// Uses a mixed approach for backwards-compatibility, as ext behavior changed
+// in new Node.js versions, so only basename() above is backported here
+exports.basename = function (path, ext) {
+  var f = basename(path);
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+exports.extname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  var startDot = -1;
+  var startPart = 0;
+  var end = -1;
+  var matchedSlash = true;
+  // Track the state of characters (if any) we see before our first dot and
+  // after any path separator we find
+  var preDotState = 0;
+  for (var i = path.length - 1; i >= 0; --i) {
+    var code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          startPart = i + 1;
+          break;
+        }
+        continue;
+      }
+    if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // extension
+      matchedSlash = false;
+      end = i + 1;
+    }
+    if (code === 46 /*.*/) {
+        // If this is our first dot, mark it as the start of our extension
+        if (startDot === -1)
+          startDot = i;
+        else if (preDotState !== 1)
+          preDotState = 1;
+    } else if (startDot !== -1) {
+      // We saw a non-dot and non-path separator before our dot, so we should
+      // have a good chance at having a non-empty extension
+      preDotState = -1;
+    }
+  }
+
+  if (startDot === -1 || end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+    return '';
+  }
+  return path.slice(startDot, end);
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
 /***/ "./node_modules/process/browser.js":
 /*!*****************************************!*\
   !*** ./node_modules/process/browser.js ***!
@@ -20124,6 +20505,12 @@ var render = function () {
           },
           [_vm._v("Agregar Nuevo")]
         ),
+        _vm._v(" "),
+        _c(
+          "router-link",
+          { staticClass: "btn btn-primary", attrs: { to: { name: "logout" } } },
+          [_vm._v("Cerrar Sesion")]
+        ),
       ],
       1
     ),
@@ -20532,6 +20919,20 @@ var render = function () {
             },
             [_vm._v("Guardar")]
           ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger",
+              attrs: { type: "button" },
+              on: {
+                click: function ($event) {
+                  return _vm.cancel()
+                },
+              },
+            },
+            [_vm._v("CANCELAR")]
+          ),
         ]),
       ]),
     ]),
@@ -20683,6 +21084,8 @@ var render = function () {
             },
             [_vm._v("Guardar")]
           ),
+          _vm._v(" "),
+          _c("p", [_vm._v(_vm._s(_vm.message))]),
         ]),
       ]),
     ]),
@@ -20818,87 +21221,104 @@ var render = function () {
   return _c("div", [
     _c("div", { staticClass: "container" }, [
       _c("div", { staticClass: "column is-4 is-offset-4" }, [
-        _c("div", { staticClass: "box" }, [
-          _c("h1", { staticClass: "title" }, [_vm._v("Login")]),
-          _vm._v(" "),
-          _vm.error
-            ? _c("div", { staticClass: "notification is-danger" }, [
-                _c("p", [_vm._v(_vm._s(_vm.error))]),
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
-              attrs: { autocomplete: "off", method: "post" },
-              on: {
-                submit: function ($event) {
-                  $event.preventDefault()
-                  return _vm.login.apply(null, arguments)
+        _c(
+          "div",
+          { staticClass: "box" },
+          [
+            _c("h1", { staticClass: "title" }, [_vm._v("Login")]),
+            _vm._v(" "),
+            _vm.error
+              ? _c("div", { staticClass: "notification is-danger" }, [
+                  _c("p", [_vm._v(_vm._s(_vm.error))]),
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "form",
+              {
+                attrs: { autocomplete: "off", method: "post" },
+                on: {
+                  submit: function ($event) {
+                    $event.preventDefault()
+                    return _vm.login.apply(null, arguments)
+                  },
                 },
               },
-            },
-            [
-              _c("div", { staticClass: "field" }, [
-                _c("div", { staticClass: "control" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.email,
-                        expression: "email",
+              [
+                _c("div", { staticClass: "field" }, [
+                  _c("div", { staticClass: "control" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.email,
+                          expression: "email",
+                        },
+                      ],
+                      staticClass: "input",
+                      attrs: { type: "email", placeholder: "user@example.com" },
+                      domProps: { value: _vm.email },
+                      on: {
+                        input: function ($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.email = $event.target.value
+                        },
                       },
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "email", placeholder: "user@example.com" },
-                    domProps: { value: _vm.email },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.email = $event.target.value
-                      },
-                    },
-                  }),
+                    }),
+                  ]),
                 ]),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "field" }, [
-                _c("div", { staticClass: "control" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.password,
-                        expression: "password",
+                _vm._v(" "),
+                _c("div", { staticClass: "field" }, [
+                  _c("div", { staticClass: "control" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.password,
+                          expression: "password",
+                        },
+                      ],
+                      staticClass: "input",
+                      attrs: { type: "password" },
+                      domProps: { value: _vm.password },
+                      on: {
+                        input: function ($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.password = $event.target.value
+                        },
                       },
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "password" },
-                    domProps: { value: _vm.password },
-                    on: {
-                      input: function ($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.password = $event.target.value
-                      },
-                    },
-                  }),
+                    }),
+                  ]),
                 ]),
-              ]),
-              _vm._v(" "),
-              _c(
-                "button",
-                { staticClass: "button is-primary", attrs: { type: "submit" } },
-                [_vm._v("Sign in")]
-              ),
-            ]
-          ),
-        ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-primary",
+                    attrs: { type: "submit" },
+                  },
+                  [_vm._v("Sign in")]
+                ),
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "router-link",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { to: { name: "register" } },
+              },
+              [_vm._v("Register")]
+            ),
+          ],
+          1
+        ),
       ]),
     ]),
   ])
@@ -38026,6 +38446,8 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
+    checkuser: null,
+    checkemail: null,
     token: localStorage.getItem('access_token') || null,
     products: [],
     types: [],
@@ -38077,45 +38499,42 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     chars: function chars(state, payload) {
       state.chars = payload;
+    },
+    checkuser: function checkuser(state, payload) {
+      state.checkuser = payload;
+    },
+    checkemail: function checkemail(state, payload) {
+      state.checkemail = payload;
     }
   },
   actions: {
     createUser: function createUser(context) {
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://localhost:8000/api/admin/register', context.state.user, {
-        "headers": {
-          "Content-Type": "Application/json"
-        }
-      }).then(function (response) {
-        console.log("response post user new: ", response);
-      })["catch"](function (error) {
-        if (error.response) {
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          console.log(error.request);
-        } else {
-          console.log('Error', error.message);
-        }
-
-        console.log(error.config);
+      return new Promise(function (resolve, reject) {
+        axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://localhost:8000/api/admin/register', context.state.user, {
+          "headers": {
+            "Content-Type": "Application/json"
+          }
+        }).then(function (response) {
+          resolve(response);
+        })["catch"](function (error) {
+          reject(error);
+        });
       });
     },
     deleteProduct: function deleteProduct(context) {
-      var token = context.state.token;
-      var instance = axios__WEBPACK_IMPORTED_MODULE_2___default.a.create({
-        baseURL: 'http://localhost:8000/api/',
-        timeout: 1000,
-        headers: {
-          'Authorization': 'Bearer ' + token
-        },
-        params: {
-          'id': context.state.productId
-        }
-      });
-      instance.get('/productdel').then(function (response) {
-        context.commit('getProducts', response.data.data);
-        return context.state.products;
+      return new Promise(function (resolve, reject) {
+        var token = context.state.token;
+        axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://localhost:8000/api/pdd', context.state.productId, {
+          "headers": {
+            'Authorization': 'Bearer ' + token,
+            "Content-Type": "Application/json"
+          }
+        }).then(function (response) {
+          context.dispatch('getProducts');
+          resolve(response);
+        })["catch"](function (error) {
+          reject(error);
+        });
       });
     },
     saveProduct: function saveProduct(context) {
@@ -38127,6 +38546,30 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         }
       }).then(function (response) {
         console.log("response post add product: ", response);
+      });
+    },
+    checkuser: function checkuser(context) {
+      return new Promise(function (resolve, reject) {
+        axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://localhost:8000/api/checkuser', context.state.user, {
+          "headers": {
+            "Content-Type": "Application/json"
+          }
+        }).then(function (response) {
+          context.commit('checkuser', response.data.data);
+          resolve(response);
+        });
+      });
+    },
+    checkemail: function checkemail(context) {
+      return new Promise(function (resolve, reject) {
+        axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://localhost:8000/api/checkemail', context.state.user, {
+          "headers": {
+            "Content-Type": "Application/json"
+          }
+        }).then(function (response) {
+          context.commit('checkemail', response.data.data);
+          resolve(response);
+        });
       });
     },
     getChars: function getChars(context) {
@@ -38186,12 +38629,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
               Authorization: "Bearer " + context.state.token
             }
           }).then(function (response) {
-            //console.log(response)
             localStorage.removeItem('access_token');
             context.commit('destroyToken');
             resolve(response);
           })["catch"](function (error) {
-            //console.log(error)
             localStorage.removeItem('access_token');
             context.commit('destroyToken');
             reject(error);
@@ -38637,8 +39078,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/rocknet/Documents/testLaravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/rocknet/Documents/testLaravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/rocknet/Documents/testGilaSoftware/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/rocknet/Documents/testGilaSoftware/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

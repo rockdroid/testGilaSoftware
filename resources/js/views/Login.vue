@@ -20,6 +20,7 @@
             </div>
             <button type="submit" class="button is-primary">Sign in</button>
           </form>
+          <router-link :to='{name:"register"}' class="btn btn-primary">Register</router-link>
         </div>
       </div>
     </div>

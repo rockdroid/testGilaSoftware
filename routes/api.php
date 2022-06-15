@@ -29,8 +29,12 @@ Route::prefix('admin')->group(function() {
 });
 
 Route::get('products', 'ProductController@index')->middleware(['auth:api', 'scope:read']);
+Route::post('logout', 'API\AuthController@logout')->middleware(['auth:api', 'scope:read']);
 Route::post('product', 'ProductController@store')->middleware(['auth:api', 'scope:create']);
-Route::get('productdel', 'ProductController@destroy')->middleware(['auth:api', 'scope:delete']);
+Route::post('pdd', 'ProductController@prodd')->middleware(['auth:api', 'scope:read']);
 
 Route::get('types', 'ProductController@types');
 Route::get('chars', 'ProductController@chars');
+
+Route::post('checkuser', 'API\AuthController@checkUser');
+Route::post('checkemail', 'API\AuthController@checkEmail');

@@ -1,7 +1,10 @@
 <template>
     <div class="row">
         <div class="col-12 mb-2 text-end">
+            
             <router-link :to='{name:"newProduct"}' class="btn btn-primary">Agregar Nuevo</router-link>
+            
+            <router-link :to='{name:"logout"}' class="btn btn-primary">Cerrar Sesion</router-link>
         </div>
         <div class="col-12">
             <div class="card">
@@ -73,12 +76,12 @@ export default {
             this.$store.dispatch("getProducts")
         },
         deleteProduct(id){
-            console.log('borrar id: ', id)
+            
             this.$store.commit('setProductId', id);
             this.$store
-            .dispatch("deleteProduct", id)
+            .dispatch("deleteProduct")
             .then(response => {
-            this.$router.push({ name: "productList" });
+            
             })
             .catch(error => {
             this.error = error.response.data;

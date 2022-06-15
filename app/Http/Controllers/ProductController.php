@@ -51,16 +51,16 @@ class ProductController extends Controller
         return Helpers::resp(200, 'SUCCESS', $id);
     }
 
-    public function destroy(Request $request)
+    public function prodd(Request $request)
     {
-        dd($request->all());
-        $productId = $request['id'];
+        $productId = $request->all()[0];
 
         $product = new Product();
-        $product::find($productId);
-        $product->delete();
+        $product::destroy($productId);
 
-        return Helpers::resp(200, 'SUCCESS', $productId);
+        $data = $product::all();
+
+        return Helpers::resp(200, 'SUCCESS', $data);
     }
 
 }

@@ -33,7 +33,7 @@
 
                   
                     <button type="button" @click="saveProduct(product)" class="btn btn-danger">Guardar</button>
-                        
+                      <button type="button" @click="cancel()" class="btn btn-danger">CANCELAR</button>   
                 
                 </div>
             </div>
@@ -63,6 +63,10 @@ export default {
         this.getChars()
     },
     methods:{
+       cancel (){
+           this.$store.state.product = this.product
+           this.$router.push({ name: "productList" })
+       },
        async getTypes(){
            this.$store.dispatch("getTypes")
        },
@@ -71,15 +75,15 @@ export default {
        },
        saveProduct(product){
            console.log("product: ", product)
-           this.$store.commit('setProduct', product);
+           this.$store.commit('setProduct', product)
            this.$store
             .dispatch("saveProduct", product)
             .then(response => {
-            this.$router.push({ name: "productList" });
+            this.$router.push({ name: "productList" })
             })
             .catch(error => {
-            this.error = error.response.data;
-            });
+            this.error = error.response.data
+            })
        }
     },
     computed: {
